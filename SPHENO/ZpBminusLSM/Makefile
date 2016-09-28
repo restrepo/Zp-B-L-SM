@@ -56,7 +56,7 @@ ${name}:  ${name}(Model_Data_ZpBminusLSM.o)  \
  ${name}(Couplings_ZpBminusLSM.o) ${name}(TreeLevelMasses_ZpBminusLSM.o) ${name}(TadpoleEquations_ZpBminusLSM.o) \
  ${name}(LoopCouplings_ZpBminusLSM.o) ${name}(CouplingsForDecays_ZpBminusLSM.o) \
  ${name}(TreeLevel_Decays_ZpBminusLSM.o) \
- ${name}(Fv.o)  ${name}(Fu.o)  ${name}(Fe.o)  ${name}(Fd.o)  \
+ ${name}(Fv.o)  ${name}(Fu.o)  ${name}(Fe.o)  ${name}(Fd.o)  ${name}(VZp.o)  ${name}(hh.o)  \
 ${name}(AddLoopFunctions.o) ${name}(Kinematics.o) \
  ${name}(LoopMasses_ZpBminusLSM.o) \
  ${name}(BranchingRatios_ZpBminusLSM.o) ${name}(HiggsCS_ZpBminusLSM.o) ${name}(RunSM_ZpBminusLSM.o) \

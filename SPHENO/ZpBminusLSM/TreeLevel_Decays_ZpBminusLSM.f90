@@ -3,7 +3,7 @@
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 10:27 on 27.9.2016   
+! File created at 10:01 on 28.9.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -608,6 +608,354 @@ End Do
 Iname = Iname - 1 
  
 End Subroutine FvTwoBodyDecay
+ 
+ 
+Subroutine VZTwoBodyDecay(i_in,deltaM,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,            & 
+& MFv,MFv2,Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,              & 
+& ZUR,ZDL,ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,              & 
+& Ye,Yv,Yu,MUP,mu,v,vX,gPartial,gT,BR)
+
+Implicit None 
+ 
+Real(dp),Intent(in) :: g1,gBY,g2,g3,gBL,gYB,v,vX,MAh(2),MAh2(2),MFd(3),MFd2(3),MFe(3),MFe2(3),               & 
+& MFu(3),MFu2(3),MFv(6),MFv2(6),Mhh(2),Mhh2(2),MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,             & 
+& MVZp,MVZp2,TW,TWp,ZA(2,2),ZH(2,2),ZZ(3,3)
+
+Complex(dp),Intent(in) :: lam2,lam3,lam1,Yx(3,3),Yd(3,3),Ye(3,3),Yv(3,3),Yu(3,3),MUP,mu,ZDR(3,3),               & 
+& ZER(3,3),ZUR(3,3),ZDL(3,3),ZEL(3,3),ZUL(3,3),UV(6,6),ZW(2,2)
+
+Complex(dp) :: cplcFdFdVZL(3,3),cplcFdFdVZR(3,3),cplcFeFeVZL(3,3),cplcFeFeVZR(3,3),cplcFuFuVZL(3,3), & 
+& cplcFuFuVZR(3,3),cplFvFvVZL(6,6),cplFvFvVZR(6,6),cplhhVZVZ(2),cplhhVZVZp(2),           & 
+& cplcVWmVWmVZ
+
+Integer, Intent(in) :: i_in 
+Real(dp), Intent(inout) :: gPartial(:,:), gT 
+Real(dp), Intent(in) :: deltaM 
+Real(dp), Optional, Intent(inout) :: BR(:,:) 
+Integer :: i1, i2, i3, i4, i_start, i_end, i_count, gt1, gt2, gt3, gt4 
+Real(dp) :: gam, m_in, m1out, m2out, coupReal 
+Complex(dp) :: coupC, coupR, coupL, coup 
+ 
+Iname = Iname + 1 
+NameOfUnit(Iname) = 'VZTwoBodyDecay'
+ 
+If (i_in.Lt.0) Then 
+  i_start = 1 
+  i_end = 1 
+  gT = 0._dp 
+  gPartial = 0._dp 
+Else 
+  If (ErrorLevel.Ge.-1) Then 
+     Write(ErrCan,*) 'Problem in subroutine '//NameOfUnit(Iname) 
+     Write(ErrCan,*) 'Value of i_in out of range, (i_in,i_max) = ', i_in,1
+
+     Write(*,*) 'Problem in subroutine '//NameOfUnit(Iname) 
+     Write(*,*) 'Value of i_in out of range, (i_in,i_max) = ', i_in,1
+
+  End If 
+  If (ErrorLevel.Gt.0) Call TerminateProgram 
+  If (Present(BR)) BR = 0._dp 
+  Iname = Iname -1 
+  Return 
+End If 
+ 
+i1=1 
+m_in = MVZ 
+Call CouplingsFor_VZ_decays_2B(m_in,i1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,           & 
+& MFv,MFv2,Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,              & 
+& ZUR,ZDL,ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,              & 
+& Ye,Yv,Yu,MUP,mu,v,vX,cplcFdFdVZL,cplcFdFdVZR,cplcFeFeVZL,cplcFeFeVZR,cplcFuFuVZL,      & 
+& cplcFuFuVZR,cplFvFvVZL,cplFvFvVZR,cplhhVZVZ,cplhhVZVZp,cplcVWmVWmVZ,deltaM)
+
+i_count = 1 
+
+ 
+! ----------------------------------------------
+! bar[Fd], Fd
+! ----------------------------------------------
+
+ 
+Do gt1= 1, 3
+  Do gt2=1, 3
+m1out = MFd(gt1)
+m2out = MFd(gt2)
+coupL = cplcFdFdVZL(gt1,gt2)
+coupR = cplcFdFdVZR(gt1,gt2)
+Call VectorBosonToTwoFermions(m_in,m1out,m2out,1,coupL,coupR,gam) 
+gPartial(1,i_count) = 3*gam 
+gT = gT + gPartial(1,i_count) 
+i_count = i_count +1 
+  End Do 
+End Do 
+ 
+
+ 
+! ----------------------------------------------
+! bar[Fe], Fe
+! ----------------------------------------------
+
+ 
+Do gt1= 1, 3
+  Do gt2=1, 3
+m1out = MFe(gt1)
+m2out = MFe(gt2)
+coupL = cplcFeFeVZL(gt1,gt2)
+coupR = cplcFeFeVZR(gt1,gt2)
+Call VectorBosonToTwoFermions(m_in,m1out,m2out,1,coupL,coupR,gam) 
+gPartial(1,i_count) = 1*gam 
+gT = gT + gPartial(1,i_count) 
+i_count = i_count +1 
+  End Do 
+End Do 
+ 
+
+ 
+! ----------------------------------------------
+! bar[Fu], Fu
+! ----------------------------------------------
+
+ 
+Do gt1= 1, 3
+  Do gt2=1, 3
+m1out = MFu(gt1)
+m2out = MFu(gt2)
+coupL = cplcFuFuVZL(gt1,gt2)
+coupR = cplcFuFuVZR(gt1,gt2)
+Call VectorBosonToTwoFermions(m_in,m1out,m2out,1,coupL,coupR,gam) 
+gPartial(1,i_count) = 3*gam 
+gT = gT + gPartial(1,i_count) 
+i_count = i_count +1 
+  End Do 
+End Do 
+ 
+
+ 
+! ----------------------------------------------
+! Fv, Fv
+! ----------------------------------------------
+
+ 
+Do gt1= 1, 6
+  Do gt2= gt1, 6
+m1out = MFv(gt1)
+m2out = MFv(gt2)
+coupL = cplFvFvVZL(gt1,gt2)
+coupR = cplFvFvVZR(gt1,gt2)
+Call VectorBosonToTwoFermions(m_in,m1out,m2out,1,coupL,coupR,gam) 
+If (gt1.ne.gt2) gam = 2._dp*gam 
+gPartial(1,i_count) = 1._dp/2._dp*gam 
+gT = gT + gPartial(1,i_count) 
+i_count = i_count +1 
+  End Do 
+End Do 
+ 
+
+ 
+! ----------------------------------------------
+! hh, VZ
+! ----------------------------------------------
+
+ 
+Do gt1= 1, 2
+m1out = Mhh(gt1)
+m2out = MVZ
+coup = cplhhVZVZ(gt1)
+Call VectorBosonToScalarAndVectorBoson(m_in,m1out,m2out,coup,gam) 
+gPartial(1,i_count) = 1._dp/2._dp*gam 
+gT = gT + gPartial(1,i_count) 
+i_count = i_count +1 
+  End Do 
+
+ 
+! ----------------------------------------------
+! hh, VZp
+! ----------------------------------------------
+
+ 
+Do gt1= 1, 2
+m1out = Mhh(gt1)
+m2out = MVZp
+coup = cplhhVZVZp(gt1)
+Call VectorBosonToScalarAndVectorBoson(m_in,m1out,m2out,coup,gam) 
+gPartial(1,i_count) = 1._dp/2._dp*gam 
+gT = gT + gPartial(1,i_count) 
+i_count = i_count +1 
+  End Do 
+
+ 
+! ----------------------------------------------
+! VWm, conj[VWm]
+! ----------------------------------------------
+
+ 
+m1out = MVWm
+m2out = MVWm
+coup = cplcVWmVWmVZ
+Call VectorBosonToTwoVectorBosons(m_in,m1out,m2out,coup,gam) 
+gPartial(1,i_count) = 1*gam 
+gT = gT + gPartial(1,i_count) 
+i_count = i_count +1 
+If ((Present(BR)).And.(gT.Eq.0)) Then 
+  BR(1,:) = 0._dp 
+Else If (Present(BR)) Then 
+  BR(1,:) = gPartial(1,:)/gT 
+End if 
+ 
+Iname = Iname - 1 
+ 
+End Subroutine VZTwoBodyDecay
+ 
+ 
+Subroutine VWmTwoBodyDecay(i_in,deltaM,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,           & 
+& MFv,MFv2,Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,              & 
+& ZUR,ZDL,ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,              & 
+& Ye,Yv,Yu,MUP,mu,v,vX,gPartial,gT,BR)
+
+Implicit None 
+ 
+Real(dp),Intent(in) :: g1,gBY,g2,g3,gBL,gYB,v,vX,MAh(2),MAh2(2),MFd(3),MFd2(3),MFe(3),MFe2(3),               & 
+& MFu(3),MFu2(3),MFv(6),MFv2(6),Mhh(2),Mhh2(2),MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,             & 
+& MVZp,MVZp2,TW,TWp,ZA(2,2),ZH(2,2),ZZ(3,3)
+
+Complex(dp),Intent(in) :: lam2,lam3,lam1,Yx(3,3),Yd(3,3),Ye(3,3),Yv(3,3),Yu(3,3),MUP,mu,ZDR(3,3),               & 
+& ZER(3,3),ZUR(3,3),ZDL(3,3),ZEL(3,3),ZUL(3,3),UV(6,6),ZW(2,2)
+
+Complex(dp) :: cplcFuFdcVWmL(3,3),cplcFuFdcVWmR(3,3),cplFvFecVWmL(6,3),cplFvFecVWmR(6,3),            & 
+& cplhhcVWmVWm(2),cplcVWmVWmVZ,cplcVWmVWmVZp
+
+Integer, Intent(in) :: i_in 
+Real(dp), Intent(inout) :: gPartial(:,:), gT 
+Real(dp), Intent(in) :: deltaM 
+Real(dp), Optional, Intent(inout) :: BR(:,:) 
+Integer :: i1, i2, i3, i4, i_start, i_end, i_count, gt1, gt2, gt3, gt4 
+Real(dp) :: gam, m_in, m1out, m2out, coupReal 
+Complex(dp) :: coupC, coupR, coupL, coup 
+ 
+Iname = Iname + 1 
+NameOfUnit(Iname) = 'VWmTwoBodyDecay'
+ 
+If (i_in.Lt.0) Then 
+  i_start = 1 
+  i_end = 1 
+  gT = 0._dp 
+  gPartial = 0._dp 
+Else 
+  If (ErrorLevel.Ge.-1) Then 
+     Write(ErrCan,*) 'Problem in subroutine '//NameOfUnit(Iname) 
+     Write(ErrCan,*) 'Value of i_in out of range, (i_in,i_max) = ', i_in,1
+
+     Write(*,*) 'Problem in subroutine '//NameOfUnit(Iname) 
+     Write(*,*) 'Value of i_in out of range, (i_in,i_max) = ', i_in,1
+
+  End If 
+  If (ErrorLevel.Gt.0) Call TerminateProgram 
+  If (Present(BR)) BR = 0._dp 
+  Iname = Iname -1 
+  Return 
+End If 
+ 
+i1=1 
+m_in = MVWm 
+Call CouplingsFor_VWm_decays_2B(m_in,i1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,               & 
+& MFu2,MFv,MFv2,Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,             & 
+& ZER,ZUR,ZDL,ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,             & 
+& Yd,Ye,Yv,Yu,MUP,mu,v,vX,cplcFuFdcVWmL,cplcFuFdcVWmR,cplFvFecVWmL,cplFvFecVWmR,         & 
+& cplhhcVWmVWm,cplcVWmVWmVZ,cplcVWmVWmVZp,deltaM)
+
+i_count = 1 
+
+ 
+! ----------------------------------------------
+! bar[Fu], Fd
+! ----------------------------------------------
+
+ 
+Do gt1= 1, 3
+  Do gt2=1, 3
+m1out = MFu(gt1)
+m2out = MFd(gt2)
+coupL = cplcFuFdcVWmL(gt1,gt2)
+coupR = cplcFuFdcVWmR(gt1,gt2)
+Call VectorBosonToTwoFermions(m_in,m1out,m2out,1,coupL,coupR,gam) 
+gPartial(1,i_count) = 3*gam 
+gT = gT + gPartial(1,i_count) 
+i_count = i_count +1 
+  End Do 
+End Do 
+ 
+
+ 
+! ----------------------------------------------
+! Fv, Fe
+! ----------------------------------------------
+
+ 
+Do gt1= 1, 6
+  Do gt2=1, 3
+m1out = MFv(gt1)
+m2out = MFe(gt2)
+coupL = cplFvFecVWmL(gt1,gt2)
+coupR = cplFvFecVWmR(gt1,gt2)
+Call VectorBosonToTwoFermions(m_in,m1out,m2out,1,coupL,coupR,gam) 
+gPartial(1,i_count) = 1*gam 
+gT = gT + gPartial(1,i_count) 
+i_count = i_count +1 
+  End Do 
+End Do 
+ 
+
+ 
+! ----------------------------------------------
+! hh, VWm
+! ----------------------------------------------
+
+ 
+Do gt1= 1, 2
+m1out = Mhh(gt1)
+m2out = MVWm
+coup = cplhhcVWmVWm(gt1)
+Call VectorBosonToScalarAndVectorBoson(m_in,m1out,m2out,coup,gam) 
+gPartial(1,i_count) = 1*gam 
+gT = gT + gPartial(1,i_count) 
+i_count = i_count +1 
+  End Do 
+
+ 
+! ----------------------------------------------
+! VWm, VZ
+! ----------------------------------------------
+
+ 
+m1out = MVWm
+m2out = MVZ
+coup = cplcVWmVWmVZ
+Call VectorBosonToTwoVectorBosons(m_in,m1out,m2out,coup,gam) 
+gPartial(1,i_count) = 1*gam 
+gT = gT + gPartial(1,i_count) 
+i_count = i_count +1 
+
+ 
+! ----------------------------------------------
+! VWm, VZp
+! ----------------------------------------------
+
+ 
+m1out = MVWm
+m2out = MVZp
+coup = cplcVWmVWmVZp
+Call VectorBosonToTwoVectorBosons(m_in,m1out,m2out,coup,gam) 
+gPartial(1,i_count) = 1*gam 
+gT = gT + gPartial(1,i_count) 
+i_count = i_count +1 
+If ((Present(BR)).And.(gT.Eq.0)) Then 
+  BR(1,:) = 0._dp 
+Else If (Present(BR)) Then 
+  BR(1,:) = gPartial(1,:)/gT 
+End if 
+ 
+Iname = Iname - 1 
+ 
+End Subroutine VWmTwoBodyDecay
  
  
 Subroutine hhTwoBodyDecay(i_in,deltaM,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,            & 

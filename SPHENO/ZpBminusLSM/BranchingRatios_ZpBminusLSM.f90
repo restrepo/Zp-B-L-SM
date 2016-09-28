@@ -3,7 +3,7 @@
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 10:28 on 27.9.2016   
+! File created at 10:01 on 28.9.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -17,6 +17,8 @@ Use Fv3Decays_ZpBminusLSM
 Use Fu3Decays_ZpBminusLSM 
 Use Fe3Decays_ZpBminusLSM 
 Use Fd3Decays_ZpBminusLSM 
+Use VZp3Decays_ZpBminusLSM 
+Use hh3Decays_ZpBminusLSM 
 Use TreeLevelDecays_ZpBminusLSM 
 
 
@@ -26,7 +28,8 @@ Subroutine CalculateBR(CTBD,fac3,epsI,deltaM,kont,MAh,MAh2,MFd,MFd2,MFe,        
 & MFe2,MFu,MFu2,MFv,MFv2,Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,               & 
 & TW,TWp,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,v,vX,g1,gBY,g2,g3,gBL,gYB,               & 
 & lam2,lam3,lam1,Yx,Yd,Ye,Yv,Yu,MUP,mu,gPFu,gTFu,BRFu,gPFe,gTFe,BRFe,gPFd,               & 
-& gTFd,BRFd,gPFv,gTFv,BRFv,gPhh,gThh,BRhh,gPVZp,gTVZp,BRVZp)
+& gTFd,BRFd,gPFv,gTFv,BRFv,gPVZ,gTVZ,BRVZ,gPVWm,gTVWm,BRVWm,gPhh,gThh,BRhh,              & 
+& gPVZp,gTVZp,BRVZp)
 
 Real(dp), Intent(in) :: epsI, deltaM, fac3 
 Integer, Intent(inout) :: kont 
@@ -43,8 +46,9 @@ Complex(dp),Intent(in) :: ZDR(3,3),ZER(3,3),ZUR(3,3),ZDL(3,3),ZEL(3,3),ZUL(3,3),
 Real(dp),Intent(in) :: v,vX
 
 Real(dp),Intent(inout) :: gPFu(3,258),gTFu(3),BRFu(3,258),gPFe(3,261),gTFe(3),BRFe(3,261),gPFd(3,258),          & 
-& gTFd(3),BRFd(3,258),gPFv(6,432),gTFv(6),BRFv(6,432),gPhh(2,59),gThh(2),BRhh(2,59),     & 
-& gPVZp(1,53),gTVZp,BRVZp(1,53)
+& gTFd(3),BRFd(3,258),gPFv(6,432),gTFv(6),BRFv(6,432),gPVZ(1,53),gTVZ,BRVZ(1,53),        & 
+& gPVWm(1,31),gTVWm,BRVWm(1,31),gPhh(2,338),gThh(2),BRhh(2,338),gPVZp(1,296),            & 
+& gTVZp,BRVZp(1,296)
 
 Complex(dp) :: cplHiggsPP(2),cplHiggsGG(2),cplPseudoHiggsPP(2),cplPseudoHiggsGG(2),cplHiggsZZvirt(2),& 
 & cplHiggsWWvirt(2)
@@ -54,12 +58,14 @@ Real(dp) :: gFvFecFdFu(6,3,3,3),gFvFvcFeFe(6,6,3,3),gFvFvcFdFd(6,6,3,3),gFvFvcFu
 & gFvFvFvFv(6,6,6,6),gFuFucFdFd(3,3,3,3),gFuFdcFeFv(3,3,3,6),gFuFucFeFe(3,3,3,3),        & 
 & gFuFucFuFu(3,3,3,3),gFuFuFvFv(3,3,6,6),gFeFecFdFd(3,3,3,3),gFeFecFeFe(3,3,3,3),        & 
 & gFeFecFuFu(3,3,3,3),gFeFeFvFv(3,3,6,6),gFeFvcFuFd(3,6,3,3),gFdFdcFdFd(3,3,3,3),        & 
-& gFdFdcFeFe(3,3,3,3),gFdFdcFuFu(3,3,3,3),gFdFdFvFv(3,3,6,6),gFdFuFvFe(3,3,6,3)
+& gFdFdcFeFe(3,3,3,3),gFdFdcFuFu(3,3,3,3),gFdFdFvFv(3,3,6,6),gFdFuFvFe(3,3,6,3),         & 
+& gVZpFdcFdFd(1,3,3,3),gVZpFdcFeFe(1,3,3,3),gVZpFdcFuFu(1,3,3,3),gVZpFdFvFv(1,3,6,6),    & 
+& gVZpFuFvFe(1,3,6,3),ghhAhFdcFd(2,2,3,3),ghhAhFecFe(2,2,3,3),ghhAhFucFu(2,2,3,3),       & 
+& ghhAhFvFv(2,2,6,6),ghhhhFdcFd(2,2,3,3),ghhcHmFdcFu(2,1,3,3),ghhcHmFeFv(2,1,3,6),       & 
+& ghhhhFecFe(2,2,3,3),ghhhhFucFu(2,2,3,3),ghhhhFvFv(2,2,6,6)
 
 Complex(dp) :: coup 
 Real(dp) :: vev 
-Real(dp) :: gTVZ,gTVWm
-
 Iname = Iname + 1 
 NameOfUnit(Iname) = 'CalculateBR'
  
@@ -122,13 +128,41 @@ If (gTFv(i1).Gt.0._dp) BRFv(i1,: ) =gPFv(i1,:)/gTFv(i1)
 End Do 
  
 
+gPVZ = 0._dp 
+gTVZ = 0._dp 
+BRVZ = 0._dp 
+Call VZTwoBodyDecay(-1,DeltaM,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,MFv,MFv2,           & 
+& Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,ZUR,ZDL,               & 
+& ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,Ye,Yv,Yu,             & 
+& MUP,mu,v,vX,gPVZ,gTVZ,BRVZ)
+
+! Set Goldstone Widhts 
+
+
+gPVWm = 0._dp 
+gTVWm = 0._dp 
+BRVWm = 0._dp 
+Call VWmTwoBodyDecay(-1,DeltaM,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,MFv,               & 
+& MFv2,Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,ZUR,              & 
+& ZDL,ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,Ye,               & 
+& Yv,Yu,MUP,mu,v,vX,gPVWm,gTVWm,BRVWm)
+
+! Set Goldstone Widhts 
+
+
 gPhh = 0._dp 
 gThh = 0._dp 
 BRhh = 0._dp 
 Call hhTwoBodyDecay(-1,DeltaM,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,MFv,MFv2,           & 
 & Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,ZUR,ZDL,               & 
 & ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,Ye,Yv,Yu,             & 
-& MUP,mu,v,vX,gPhh,gThh,BRhh)
+& MUP,mu,v,vX,gPhh(:,1:59),gThh,BRhh(:,1:59))
+
+Do i1=1,2
+gThh(i1) =Sum(gPhh(i1,:)) 
+If (gThh(i1).Gt.0._dp) BRhh(i1,: ) =gPhh(i1,:)/gThh(i1) 
+End Do 
+ 
 
 gPVZp = 0._dp 
 gTVZp = 0._dp 
@@ -136,10 +170,13 @@ BRVZp = 0._dp
 Call VZpTwoBodyDecay(-1,DeltaM,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,MFv,               & 
 & MFv2,Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,ZUR,              & 
 & ZDL,ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,Ye,               & 
-& Yv,Yu,MUP,mu,v,vX,gPVZp,gTVZp,BRVZp)
+& Yv,Yu,MUP,mu,v,vX,gPVZp(:,1:53),gTVZp,BRVZp(:,1:53))
 
-! Set Goldstone Widhts 
-
+Do i1=1,1
+gTVZp =Sum(gPVZp(i1,:)) 
+If (gTVZp.Gt.0._dp) BRVZp(i1,: ) =gPVZp(i1,:)/gTVZp 
+End Do 
+ 
 
 If (.Not.CTBD) Then 
 If (Enable3BDecaysF) Then 
@@ -273,8 +310,77 @@ If (gTFv(i1).Gt.0._dp) BRFv(i1,: ) =gPFv(i1,:)/gTFv(i1)
 End Do 
  
 
-! No 3-body decays for hh  
-! No 3-body decays for VZp  
+! No 3-body decays for VZ  
+! No 3-body decays for VWm  
+If (.Not.CTBD) Then 
+If (Enable3BDecaysS) Then 
+If (MaxVal(gThh).Lt.MaxVal(fac3*Abs(Mhh))) Then 
+Call hhThreeBodyDecay(-1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,MFv,MFv2,Mhh,            & 
+& Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,ZUR,ZDL,ZEL,               & 
+& ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,Ye,Yv,Yu,MUP,             & 
+& mu,v,vX,ghhAhFdcFd,ghhAhFecFe,ghhAhFucFu,ghhAhFvFv,ghhhhFdcFd,ghhcHmFdcFu,             & 
+& ghhcHmFeFv,ghhhhFecFe,ghhhhFucFu,ghhhhFvFv,epsI,deltaM,.False.,gThh,gPhh(:,60:338)     & 
+& ,BRhh(:,60:338))
+
+Else 
+Call hhThreeBodyDecay(-1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,MFv,MFv2,Mhh,            & 
+& Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,ZUR,ZDL,ZEL,               & 
+& ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,Ye,Yv,Yu,MUP,             & 
+& mu,v,vX,ghhAhFdcFd,ghhAhFecFe,ghhAhFucFu,ghhAhFvFv,ghhhhFdcFd,ghhcHmFdcFu,             & 
+& ghhcHmFeFv,ghhhhFecFe,ghhhhFucFu,ghhhhFvFv,epsI,deltaM,.True.,gThh,gPhh(:,60:338)      & 
+& ,BRhh(:,60:338))
+
+End If 
+ 
+End If 
+Else 
+Call hhThreeBodyDecay(-1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,MFv,MFv2,Mhh,            & 
+& Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,ZUR,ZDL,ZEL,               & 
+& ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,Ye,Yv,Yu,MUP,             & 
+& mu,v,vX,ghhAhFdcFd,ghhAhFecFe,ghhAhFucFu,ghhAhFvFv,ghhhhFdcFd,ghhcHmFdcFu,             & 
+& ghhcHmFeFv,ghhhhFecFe,ghhhhFucFu,ghhhhFvFv,epsI,deltaM,.False.,gThh,gPhh(:,60:338)     & 
+& ,BRhh(:,60:338))
+
+End If 
+Do i1=1,2
+gThh(i1) =Sum(gPhh(i1,:)) 
+If (gThh(i1).Gt.0._dp) BRhh(i1,: ) =gPhh(i1,:)/gThh(i1) 
+End Do 
+ 
+
+If (.Not.CTBD) Then 
+If (Enable3BDecaysS) Then 
+If (gTVZp.Lt.fac3*Abs(MVZp)) Then 
+Call VZpThreeBodyDecay(-1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,MFv,MFv2,               & 
+& Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,ZUR,ZDL,               & 
+& ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,Ye,Yv,Yu,             & 
+& MUP,mu,v,vX,gVZpFdcFdFd,gVZpFdcFeFe,gVZpFdcFuFu,gVZpFdFvFv,gVZpFuFvFe,epsI,            & 
+& deltaM,.False.,gTVZp,gPVZp(:,54:296),BRVZp(:,54:296))
+
+Else 
+Call VZpThreeBodyDecay(-1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,MFv,MFv2,               & 
+& Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,ZUR,ZDL,               & 
+& ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,Ye,Yv,Yu,             & 
+& MUP,mu,v,vX,gVZpFdcFdFd,gVZpFdcFeFe,gVZpFdcFuFu,gVZpFdFvFv,gVZpFuFvFe,epsI,            & 
+& deltaM,.True.,gTVZp,gPVZp(:,54:296),BRVZp(:,54:296))
+
+End If 
+ 
+End If 
+Else 
+Call VZpThreeBodyDecay(-1,MAh,MAh2,MFd,MFd2,MFe,MFe2,MFu,MFu2,MFv,MFv2,               & 
+& Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,TW,TWp,ZDR,ZER,ZUR,ZDL,               & 
+& ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,g1,gBY,g2,g3,gBL,gYB,lam2,lam3,lam1,Yx,Yd,Ye,Yv,Yu,             & 
+& MUP,mu,v,vX,gVZpFdcFdFd,gVZpFdcFeFe,gVZpFdcFuFu,gVZpFdFvFv,gVZpFuFvFe,epsI,            & 
+& deltaM,.False.,gTVZp,gPVZp(:,54:296),BRVZp(:,54:296))
+
+End If 
+Do i1=1,1
+gTVZp =Sum(gPVZp(i1,:)) 
+If (gTVZp.Gt.0._dp) BRVZp(i1,: ) =gPVZp(i1,:)/gTVZp 
+End Do 
+ 
+
 Iname = Iname - 1 
  
 End Subroutine CalculateBR 

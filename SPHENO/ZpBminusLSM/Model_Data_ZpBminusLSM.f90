@@ -3,7 +3,7 @@
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 10:28 on 27.9.2016   
+! File created at 10:01 on 28.9.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -295,8 +295,9 @@ Real(dp) :: vIN,vXIN
 Real(dp) :: vFix,vXFix
 
 Real(dp) :: gPFu(3,258),gTFu(3),BRFu(3,258),gPFe(3,261),gTFe(3),BRFe(3,261),gPFd(3,258),          & 
-& gTFd(3),BRFd(3,258),gPFv(6,432),gTFv(6),BRFv(6,432),gPhh(2,59),gThh(2),BRhh(2,59),     & 
-& gPVZp(1,53),gTVZp,BRVZp(1,53)
+& gTFd(3),BRFd(3,258),gPFv(6,432),gTFv(6),BRFv(6,432),gPVZ(1,53),gTVZ,BRVZ(1,53),        & 
+& gPVWm(1,31),gTVWm,BRVWm(1,31),gPhh(2,338),gThh(2),BRhh(2,338),gPVZp(1,296),            & 
+& gTVZp,BRVZp(1,296)
 
 Real(dp) :: ratioFd(2,3),ratioFe(2,3),ratioFu(2,3),ratioHm(2),ratioVWm(2)
 
@@ -1080,6 +1081,12 @@ BRFd = 0._dp
 gPFv = 0._dp 
 gTFv = 0._dp 
 BRFv = 0._dp 
+gPVZ = 0._dp 
+gTVZ = 0._dp 
+BRVZ = 0._dp 
+gPVWm = 0._dp 
+gTVWm = 0._dp 
+BRVWm = 0._dp 
 gPhh = 0._dp 
 gThh = 0._dp 
 BRhh = 0._dp 
