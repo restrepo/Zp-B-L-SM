@@ -33,9 +33,9 @@ BoundaryLowScaleInput={
 
 
 
-ListDecayParticles = {Fu,Fe,Fd,Fv,hh,VZp};
-ListDecayParticles3B = {{Fv,"Fv.f90"},{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"}};
+ListDecayParticles = {Fu,Fe,Fd,Fv,VZ,VWm,hh,VZp};
+ListDecayParticles3B = {{Fv,"Fv.f90"},{Fu,"Fu.f90"},{Fe,"Fe.f90"},{Fd,"Fd.f90"},{VZp,"VZp.f90"},{hh,"hh.f90"}};
 
 
-DefaultInputValues ={Lambda1INPUT -> -0.127, Lambda2INPUT -> -7.2*10^-5, g1pINPUT->0.5, vXinput->2500, Yx[a_,a_]-> 0.32};
+DefaultInputValues ={Lambda1INPUT -> -0.127, Lambda2INPUT -> -7.2*10^-5, g1pINPUT->0.5, vXinput->2500, Yv[a_,a_]-> 0.000005, Yx[a_,a_]-> 0.32};
 
