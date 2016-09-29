@@ -3,7 +3,7 @@
 ! SARAH References: arXiv:0806.0538, 0909.2863, 1002.0840, 1207.0906, 1309.7223  
 ! (c) Florian Staub, 2013  
 ! ------------------------------------------------------------------------------  
-! File created at 10:32 on 27.9.2016   
+! File created at 10:05 on 28.9.2016   
 ! ----------------------------------------------------------------------  
  
  
@@ -278,7 +278,8 @@ If ((L_BR).And.(kont.Eq.0)) Then
 & MFe2,MFu,MFu2,MFv,MFv2,Mhh,Mhh2,MHm,MHm2,MVWm,MVWm2,MVZ,MVZ2,MVZp,MVZp2,               & 
 & TW,TWp,ZDR,ZER,ZUR,ZDL,ZEL,ZUL,ZA,ZH,UV,ZW,ZZ,v,vX,g1,gBY,g2,g3,gBL,gYB,               & 
 & lam2,lam3,lam1,Yx,Yd,Ye,Yv,Yu,MUP,mu,gPFu,gTFu,BRFu,gPFe,gTFe,BRFe,gPFd,               & 
-& gTFd,BRFd,gPFv,gTFv,BRFv,gPhh,gThh,BRhh,gPVZp,gTVZp,BRVZp)
+& gTFd,BRFd,gPFv,gTFv,BRFv,gPVZ,gTVZ,BRVZ,gPVWm,gTVWm,BRVWm,gPhh,gThh,BRhh,              & 
+& gPVZp,gTVZp,BRVZp)
 
 Call HiggsCrossSections(Mhh,ratioGG,ratioPP,rHB_S_VWm,rHB_S_VZ,rHB_S_S_Fu(:,3)        & 
 & ,CS_Higgs_LHC,kont)
